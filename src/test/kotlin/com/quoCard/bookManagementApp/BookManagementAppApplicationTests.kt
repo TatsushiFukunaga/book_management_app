@@ -1,4 +1,4 @@
-package com.quo_card.book_management_app
+package com.quoCard.bookManagementApp
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

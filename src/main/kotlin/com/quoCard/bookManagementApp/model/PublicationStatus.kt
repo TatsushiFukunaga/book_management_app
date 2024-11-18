@@ -1,4 +1,4 @@
-package com.quo_card.book_management_app.model
+package com.quoCard.bookManagementApp.model
 
 enum class PublicationStatus {
     UNPUBLISHED,

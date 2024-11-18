@@ -1,7 +1,7 @@
-package com.quo_card.book_management_app.service
+package com.quoCard.bookManagementApp.service
 
-import com.quo_card.book_management_app.model.Book
-import com.quo_card.book_management_app.repository.BookRepository
+import com.quoCard.bookManagementApp.model.Book
+import com.quoCard.bookManagementApp.repository.BookRepository
 import org.springframework.stereotype.Service
 
 @Service
@@ -24,14 +24,19 @@ class BookService(
     fun updateBook(id: Long, updatedBook: Book): Book {
         val existingBook = getBookById(id)
         val bookToSave = existingBook.copy(
+            id = updatedBook.id,
             title = updatedBook.title,
             price = updatedBook.price,
-            status = updatedBook.status
+            status = updatedBook.status,
+            authors = updatedBook.authors
         )
         return bookRepository.save(bookToSave)
     }
 
     fun deleteBook(id: Long) {
+        if (bookRepository.findById(id) == null) {
+            throw IllegalArgumentException("Book with ID $id not found")
+        }
         bookRepository.deleteById(id)
     }
 }

@@ -1,4 +1,4 @@
-package com.quo_card.book_management_app
+package com.quoCard.bookManagementApp
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

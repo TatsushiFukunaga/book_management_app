@@ -1,9 +1,9 @@
-package com.quo_card.book_management_app.repository
+package com.quoCard.bookManagementApp.repository
 
-import com.quo_card.book_management_app.extension.toModel
-import com.quo_card.book_management_app.jooq.tables.Author.AUTHOR
-import com.quo_card.book_management_app.jooq.tables.records.AuthorRecord
-import com.quo_card.book_management_app.model.Author
+import com.quoCard.bookManagementApp.extension.toModel
+import com.quoCard.bookManagementApp.jooq.tables.Author.AUTHOR
+import com.quoCard.bookManagementApp.jooq.tables.records.AuthorRecord
+import com.quoCard.bookManagementApp.model.Author
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 

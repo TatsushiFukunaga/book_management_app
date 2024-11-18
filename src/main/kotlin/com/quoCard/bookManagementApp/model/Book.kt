@@ -1,26 +1,32 @@
-package com.quo_card.book_management_app.model
+package com.quoCard.bookManagementApp.model
 
-import javax.validation.constraints.Min
-import javax.validation.constraints.NotBlank
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
 
 @Schema(description = "Book entity representing a book in the system")
 data class Book(
     @Schema(description = "Unique identifier of the book", example = "1")
+    @JsonProperty("id")
     val id: Long = 0,
 
     @Schema(description = "Title of the book", example = "Kotlin Programming")
     @field:NotBlank(message = "Book title cannot be blank")
+    @JsonProperty("title")
     val title: String,
 
     @Schema(description = "Price of the book in USD", example = "29")
     @field:Min(value = 0, message = "Book price must be at least 0")
+    @JsonProperty("price")
     val price: Int,
 
     @Schema(description = "Publication status of the book", example = "PUBLISHED")
+    @JsonProperty("status")
     var status: PublicationStatus = PublicationStatus.UNPUBLISHED,
 
     @Schema(description = "List of authors who wrote the book")
+    @JsonProperty("authors")
     val authors: MutableList<Author> = mutableListOf()
 ) {
     fun addAuthor(author: Author) {

@@ -1,7 +1,7 @@
-package com.quo_card.book_management_app.service
+package com.quoCard.bookManagementApp.service
 
-import com.quo_card.book_management_app.model.Author
-import com.quo_card.book_management_app.repository.AuthorRepository
+import com.quoCard.bookManagementApp.model.Author
+import com.quoCard.bookManagementApp.repository.AuthorRepository
 import org.springframework.stereotype.Service
 
 @Service
@@ -24,13 +24,18 @@ class AuthorService(
     fun updateAuthor(id: Long, updatedAuthor: Author): Author {
         val existingAuthor = getAuthorById(id)
         val authorToSave = existingAuthor.copy(
+            id = updatedAuthor.id,
             name = updatedAuthor.name,
-            birthDate = updatedAuthor.birthDate
+            birthDate = updatedAuthor.birthDate,
+            books = updatedAuthor.books
         )
         return authorRepository.save(authorToSave)
     }
 
     fun deleteAuthor(id: Long) {
+        if (authorRepository.findById(id) == null) {
+            throw IllegalArgumentException("Author with ID $id not found")
+        }
         authorRepository.deleteById(id)
     }
 }

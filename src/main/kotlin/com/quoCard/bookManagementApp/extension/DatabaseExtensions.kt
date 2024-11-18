@@ -1,10 +1,10 @@
-package com.quo_card.book_management_app.extension
+package com.quoCard.bookManagementApp.extension
 
-import com.quo_card.book_management_app.jooq.tables.records.AuthorRecord
-import com.quo_card.book_management_app.jooq.tables.records.BookRecord
-import com.quo_card.book_management_app.model.Author
-import com.quo_card.book_management_app.model.Book
-import com.quo_card.book_management_app.model.PublicationStatus
+import com.quoCard.bookManagementApp.jooq.tables.records.AuthorRecord
+import com.quoCard.bookManagementApp.jooq.tables.records.BookRecord
+import com.quoCard.bookManagementApp.model.Author
+import com.quoCard.bookManagementApp.model.Book
+import com.quoCard.bookManagementApp.model.PublicationStatus
 
 fun AuthorRecord.toModel(): Author {
     return Author(

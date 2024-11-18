@@ -30,25 +30,45 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-jooq'
+	// Spring Boot Starter Dependencies
+	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-jooq'
+
+	// Database and Flyway
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-database-postgresql'
+	runtimeOnly 'org.postgresql:postgresql'
+
+	// Kotlin
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'javax.validation:validation-api:2.0.1.Final'
-	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+
+	// OpenAPI Documentation
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+	// jOOQ
 	implementation 'org.jooq:jooq:3.19.5'
 	implementation 'org.jooq:jooq-meta:3.19.5'
 	implementation 'org.jooq:jooq-codegen:3.19.5'
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+	jooqCodegen 'org.postgresql:postgresql'
+
+	// Bean Validation
+	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+	implementation 'org.glassfish:jakarta.el:4.0.2'
+	implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+
+	// Development
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-	runtimeOnly 'org.postgresql:postgresql'
+
+	// Testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.5'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	jooqCodegen 'org.postgresql:postgresql'
+	testImplementation 'org.mockito:mockito-core:5.11.0'
 }
 
 kotlin {
@@ -80,7 +100,7 @@ jooq {
 				inputSchema = 'public'
 			}
 			target {
-				packageName = 'com.quo_card.book_management_app.jooq'
+				packageName = 'com.quoCard.bookManagementApp.jooq'
 				directory = "$buildDir/generated-src/jooq/main"
 			}
 		}
