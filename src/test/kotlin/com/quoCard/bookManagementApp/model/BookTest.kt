@@ -48,15 +48,15 @@ class BookTest {
         assertEquals("Book price must be at least 0", violations.first().message)
     }
 
-    @Test
-    fun `should add author correctly`() {
-        val book = Book(title = "Kotlin Programming", price = 29)
-        val author = Author(name = "John Doe", birthDate = LocalDate.of(1980, 1, 1))
-
-        book.addAuthor(author)
-        assertTrue(book.authors.contains(author))
-        assertTrue(author.books.contains(book))
-    }
+//    @Test
+//    fun `should add author correctly`() {
+//        val book = Book(title = "Kotlin Programming", price = 29)
+//        val author = Author(name = "John Doe", birthDate = LocalDate.of(1980, 1, 1))
+//
+//        book.addAuthor(author)
+//        assertTrue(book.authors.contains(author))
+//        assertTrue(author.books.contains(book))
+//    }
 
     @Test
     fun `should update status to PUBLISHED`() {

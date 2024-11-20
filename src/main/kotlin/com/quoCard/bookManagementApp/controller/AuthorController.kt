@@ -1,6 +1,7 @@
 package com.quoCard.bookManagementApp.controller
 
 import com.quoCard.bookManagementApp.model.Author
+import com.quoCard.bookManagementApp.model.Book
 import com.quoCard.bookManagementApp.service.AuthorService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -128,5 +129,27 @@ class AuthorController(
         id: Long
     ) {
         authorService.deleteAuthor(id)
+    }
+
+    @Operation(summary = "Get all books by author ID", description = "Retrieve all books associated with a specific author")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Books retrieved successfully",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = Book::class))
+                ]
+            ),
+            ApiResponse(responseCode = "404", description = "Author not found")
+        ]
+    )
+    @GetMapping("/{id}/books")
+    fun getBooksByAuthorId(
+        @Parameter(description = "ID of the author whose books are to be retrieved", example = "1")
+        @PathVariable
+        id: Long
+    ): List<Book> {
+        return authorService.getBooksByAuthorId(id)
     }
 }

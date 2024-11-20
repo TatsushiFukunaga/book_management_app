@@ -5,20 +5,29 @@ import com.quoCard.bookManagementApp.jooq.tables.records.BookRecord
 import com.quoCard.bookManagementApp.model.Author
 import com.quoCard.bookManagementApp.model.Book
 import com.quoCard.bookManagementApp.model.PublicationStatus
+import java.util.Collections.emptyList
 
-fun AuthorRecord.toModel(): Author {
+fun AuthorRecord.toModel(books: List<Book> = emptyList()): Author {
     return Author(
-        id = this.id?.toLong() ?: 0L,
-        name = this.name ?: "",
-        birthDate = this.birthDate ?: throw IllegalStateException("Birthdate is null")
+        id = this.id?.toLong() ?: throw IllegalStateException("Author ID is null"),
+        name = this.name ?: throw IllegalStateException("Author name is null"),
+        birthDate = this.birthDate ?: throw IllegalStateException("Author birthDate is null"),
+        books = books
     )
 }
 
-fun BookRecord.toModel(): Book {
+fun BookRecord.toModel(authors: List<Author> = emptyList()): Book {
     return Book(
-        id = this.id?.toLong() ?: 0L,
-        title = this.title ?: "",
+        id = this.id?.toLong() ?: throw IllegalStateException("Book ID is null"),
+        title = this.title ?: throw IllegalStateException("Book title is null"),
         price = this.price ?: 0,
-        status = PublicationStatus.valueOf(this.status ?: "UNPUBLISHED")
+        status = this.status?.let {
+            try {
+                PublicationStatus.valueOf(it)
+            } catch (e: IllegalArgumentException) {
+                throw IllegalStateException("Invalid publication status value: $it")
+            }
+        } ?: PublicationStatus.UNPUBLISHED,
+        authors = authors
     )
 }

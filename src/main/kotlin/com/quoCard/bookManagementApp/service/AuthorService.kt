@@ -1,12 +1,15 @@
 package com.quoCard.bookManagementApp.service
 
 import com.quoCard.bookManagementApp.model.Author
+import com.quoCard.bookManagementApp.model.Book
 import com.quoCard.bookManagementApp.repository.AuthorRepository
+import com.quoCard.bookManagementApp.repository.BookRepository
 import org.springframework.stereotype.Service
 
 @Service
 class AuthorService(
-    private val authorRepository: AuthorRepository
+    private val authorRepository: AuthorRepository,
+    private val bookRepository: BookRepository
 ) {
     fun getAllAuthors(): List<Author> {
         return authorRepository.findAll()
@@ -24,7 +27,6 @@ class AuthorService(
     fun updateAuthor(id: Long, updatedAuthor: Author): Author {
         val existingAuthor = getAuthorById(id)
         val authorToSave = existingAuthor.copy(
-            id = updatedAuthor.id,
             name = updatedAuthor.name,
             birthDate = updatedAuthor.birthDate,
             books = updatedAuthor.books
@@ -33,9 +35,10 @@ class AuthorService(
     }
 
     fun deleteAuthor(id: Long) {
-        if (authorRepository.findById(id) == null) {
-            throw IllegalArgumentException("Author with ID $id not found")
-        }
         authorRepository.deleteById(id)
+    }
+
+    fun getBooksByAuthorId(authorId: Long): List<Book> {
+        return bookRepository.findByAuthor(authorId)
     }
 }

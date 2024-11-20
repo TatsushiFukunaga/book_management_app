@@ -1,9 +1,12 @@
 package com.quoCard.bookManagementApp.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotEmpty
+import java.util.Collections.emptyList
 
 @Schema(description = "Book entity representing a book in the system")
 data class Book(
@@ -27,13 +30,10 @@ data class Book(
 
     @Schema(description = "List of authors who wrote the book")
     @JsonProperty("authors")
-    val authors: MutableList<Author> = mutableListOf()
+    @field:NotEmpty(message = "A book must have at least one author")
+    @JsonIgnoreProperties("books")
+    val authors: List<Author> = emptyList()
 ) {
-    fun addAuthor(author: Author) {
-        authors.add(author)
-        author.books.add(this)
-    }
-
     fun updateStatus(newStatus: PublicationStatus) {
         if (status == PublicationStatus.PUBLISHED && newStatus == PublicationStatus.UNPUBLISHED) {
             throw IllegalArgumentException("Cannot change status from PUBLISHED to UNPUBLISHED")

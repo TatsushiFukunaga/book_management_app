@@ -83,6 +83,7 @@ flyway {
 	password = 'postgres'
 	schemas = ['public']
 	locations = ['filesystem:src/main/resources/db/migration']
+	cleanDisabled = false
 }
 
 jooq {

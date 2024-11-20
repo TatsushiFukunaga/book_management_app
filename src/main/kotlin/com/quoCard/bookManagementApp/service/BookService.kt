@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 class BookService(
     private val bookRepository: BookRepository
 ) {
+
     fun getAllBooks(): List<Book> {
         return bookRepository.findAll()
     }
@@ -18,13 +19,15 @@ class BookService(
     }
 
     fun createBook(book: Book): Book {
+        if (book.authors.isEmpty()) {
+            throw IllegalArgumentException("A book must have at least one author")
+        }
         return bookRepository.save(book)
     }
 
     fun updateBook(id: Long, updatedBook: Book): Book {
         val existingBook = getBookById(id)
         val bookToSave = existingBook.copy(
-            id = updatedBook.id,
             title = updatedBook.title,
             price = updatedBook.price,
             status = updatedBook.status,
@@ -34,9 +37,6 @@ class BookService(
     }
 
     fun deleteBook(id: Long) {
-        if (bookRepository.findById(id) == null) {
-            throw IllegalArgumentException("Book with ID $id not found")
-        }
         bookRepository.deleteById(id)
     }
 }
