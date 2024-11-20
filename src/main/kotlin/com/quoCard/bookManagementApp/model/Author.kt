@@ -28,6 +28,4 @@ data class Author(
     @JsonProperty("books")
     @JsonIgnoreProperties("authors")
     val books: List<Book> = emptyList()
-) {
-
-}
+)

@@ -4,13 +4,12 @@ import com.quoCard.bookManagementApp.extension.toModel
 import com.quoCard.bookManagementApp.jooq.Tables.BOOK_AUTHOR
 import com.quoCard.bookManagementApp.jooq.tables.Author.AUTHOR
 import com.quoCard.bookManagementApp.jooq.tables.Book.BOOK
+import com.quoCard.bookManagementApp.jooq.tables.records.AuthorRecord
 import com.quoCard.bookManagementApp.jooq.tables.records.BookRecord
 import com.quoCard.bookManagementApp.model.Author
 import com.quoCard.bookManagementApp.model.Book
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
-import com.quoCard.bookManagementApp.extension.toModel
-import com.quoCard.bookManagementApp.jooq.tables.records.AuthorRecord
 import org.springframework.transaction.annotation.Transactional
 import java.util.Collections.emptyList
 
@@ -24,11 +23,13 @@ class BookRepository(private val dsl: DSLContext) {
         return books.map { bookRecord: BookRecord ->
             val authors = dsl.select()
                 .from(AUTHOR)
-                .where(AUTHOR.ID.`in`(
-                    dsl.select(BOOK_AUTHOR.AUTHOR_ID)
-                        .from(BOOK_AUTHOR)
-                        .where(BOOK_AUTHOR.BOOK_ID.eq(bookRecord.id!!.toInt()))
-                ))
+                .where(
+                    AUTHOR.ID.`in`(
+                        dsl.select(BOOK_AUTHOR.AUTHOR_ID)
+                            .from(BOOK_AUTHOR)
+                            .where(BOOK_AUTHOR.BOOK_ID.eq(bookRecord.id!!.toInt()))
+                    )
+                )
                 .fetch()
                 .map { record ->
                     record.into(AuthorRecord::class.java).toModel()
@@ -45,11 +46,13 @@ class BookRepository(private val dsl: DSLContext) {
 
         val authors = dsl.select()
             .from(AUTHOR)
-            .where(AUTHOR.ID.`in`(
-                dsl.select(BOOK_AUTHOR.AUTHOR_ID)
-                    .from(BOOK_AUTHOR)
-                    .where(BOOK_AUTHOR.BOOK_ID.eq(id.toInt()))
-            ))
+            .where(
+                AUTHOR.ID.`in`(
+                    dsl.select(BOOK_AUTHOR.AUTHOR_ID)
+                        .from(BOOK_AUTHOR)
+                        .where(BOOK_AUTHOR.BOOK_ID.eq(id.toInt()))
+                )
+            )
             .fetch()
             .map { record ->
                 record.into(AuthorRecord::class.java).toModel()
@@ -131,21 +134,25 @@ class BookRepository(private val dsl: DSLContext) {
 
     fun findByAuthor(authorId: Long): List<Book> {
         val bookRecords = dsl.selectFrom(BOOK)
-            .where(BOOK.ID.`in`(
-                dsl.select(BOOK_AUTHOR.BOOK_ID)
-                    .from(BOOK_AUTHOR)
-                    .where(BOOK_AUTHOR.AUTHOR_ID.eq(authorId.toInt()))
-            ))
+            .where(
+                BOOK.ID.`in`(
+                    dsl.select(BOOK_AUTHOR.BOOK_ID)
+                        .from(BOOK_AUTHOR)
+                        .where(BOOK_AUTHOR.AUTHOR_ID.eq(authorId.toInt()))
+                )
+            )
             .fetchInto(BookRecord::class.java)
 
         return bookRecords.map { bookRecord: BookRecord ->
             val authors = dsl.select()
                 .from(AUTHOR)
-                .where(AUTHOR.ID.`in`(
-                    dsl.select(BOOK_AUTHOR.AUTHOR_ID)
-                        .from(BOOK_AUTHOR)
-                        .where(BOOK_AUTHOR.BOOK_ID.eq(bookRecord.id!!.toInt()))
-                ))
+                .where(
+                    AUTHOR.ID.`in`(
+                        dsl.select(BOOK_AUTHOR.AUTHOR_ID)
+                            .from(BOOK_AUTHOR)
+                            .where(BOOK_AUTHOR.BOOK_ID.eq(bookRecord.id!!.toInt()))
+                    )
+                )
                 .fetch()
                 .map { record ->
                     record.into(AuthorRecord::class.java).toModel()

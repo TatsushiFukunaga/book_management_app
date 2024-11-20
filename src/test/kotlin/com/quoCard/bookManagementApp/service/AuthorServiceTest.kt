@@ -2,7 +2,9 @@ package com.quoCard.bookManagementApp.service
 
 import com.quoCard.bookManagementApp.model.Author
 import com.quoCard.bookManagementApp.repository.AuthorRepository
+import com.quoCard.bookManagementApp.repository.BookRepository
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
@@ -11,7 +13,8 @@ import java.time.LocalDate
 internal class AuthorServiceTest {
 
     private val authorRepository: AuthorRepository = Mockito.mock(AuthorRepository::class.java)
-    private val authorService = AuthorService(authorRepository)
+    private val bookRepository: BookRepository = Mockito.mock(BookRepository::class.java)
+    private val authorService = AuthorService(authorRepository, bookRepository)
 
     @Test
     fun `getAllAuthors should return all authors`() {
@@ -19,7 +22,6 @@ internal class AuthorServiceTest {
             Author(1, "Author One", LocalDate.of(1980, 1, 1)),
             Author(2, "Author Two", LocalDate.of(1990, 2, 2))
         )
-
         Mockito.`when`(authorRepository.findAll()).thenReturn(authors)
 
         val result = authorService.getAllAuthors()
@@ -45,7 +47,6 @@ internal class AuthorServiceTest {
         val exception = assertThrows<IllegalArgumentException> {
             authorService.getAuthorById(1)
         }
-
         assertEquals("Author with ID 1 not found", exception.message)
     }
 
@@ -59,6 +60,21 @@ internal class AuthorServiceTest {
         val result = authorService.createAuthor(author)
 
         assertEquals(savedAuthor, result)
+        Mockito.verify(authorRepository).save(author)
+    }
+
+    @Test
+    fun `createAuthor should throw exception for invalid author data`() {
+        val invalidAuthor = Author(name = "", birthDate = LocalDate.of(2025, 5, 5))
+
+        val exception = assertThrows<IllegalArgumentException> {
+            authorService.createAuthor(invalidAuthor)
+        }
+
+        assertTrue(exception.message!!.contains("Invalid author data"))
+        assertTrue(exception.message!!.contains("Author name cannot be blank"))
+        assertTrue(exception.message!!.contains("Birthdate must be in the past or present"))
+        assertTrue(exception.message!!.contains("List of books written by the author"))
     }
 
     @Test
@@ -73,6 +89,7 @@ internal class AuthorServiceTest {
         val result = authorService.updateAuthor(1, updatedAuthor)
 
         assertEquals(savedAuthor, result)
+        Mockito.verify(authorRepository).save(savedAuthor)
     }
 
     @Test
@@ -93,7 +110,6 @@ internal class AuthorServiceTest {
         val author = Author(id = 1, name = "Author One", birthDate = LocalDate.of(1980, 1, 1))
         Mockito.`when`(authorRepository.findById(1)).thenReturn(author)
 
-        authorService.createAuthor(author)
         authorService.deleteAuthor(1)
 
         Mockito.verify(authorRepository).deleteById(1)

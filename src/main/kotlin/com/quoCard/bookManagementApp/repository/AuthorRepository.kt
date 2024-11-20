@@ -23,11 +23,13 @@ class AuthorRepository(private val dsl: DSLContext) {
         return authors.map { authorRecord: AuthorRecord ->
             val books = dsl.select()
                 .from(BOOK)
-                .where(BOOK.ID.`in`(
-                    dsl.select(BOOK_AUTHOR.BOOK_ID)
-                        .from(BOOK_AUTHOR)
-                        .where(BOOK_AUTHOR.AUTHOR_ID.eq(authorRecord.id!!.toInt()))
-                ))
+                .where(
+                    BOOK.ID.`in`(
+                        dsl.select(BOOK_AUTHOR.BOOK_ID)
+                            .from(BOOK_AUTHOR)
+                            .where(BOOK_AUTHOR.AUTHOR_ID.eq(authorRecord.id!!.toInt()))
+                    )
+                )
                 .fetch()
                 .map { record ->
                     record.into(BookRecord::class.java).toModel()
@@ -44,11 +46,13 @@ class AuthorRepository(private val dsl: DSLContext) {
 
         val books = dsl.select()
             .from(BOOK)
-            .where(BOOK.ID.`in`(
-                dsl.select(BOOK_AUTHOR.BOOK_ID)
-                    .from(BOOK_AUTHOR)
-                    .where(BOOK_AUTHOR.AUTHOR_ID.eq(id.toInt()))
-            ))
+            .where(
+                BOOK.ID.`in`(
+                    dsl.select(BOOK_AUTHOR.BOOK_ID)
+                        .from(BOOK_AUTHOR)
+                        .where(BOOK_AUTHOR.AUTHOR_ID.eq(id.toInt()))
+                )
+            )
             .fetch()
             .map { record ->
                 record.into(BookRecord::class.java).toModel()

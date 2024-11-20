@@ -13,12 +13,21 @@ class AuthorTest {
     private val validatorFactory: ValidatorFactory = Validation.buildDefaultValidatorFactory()
     private val validator: Validator = validatorFactory.validator
 
+    private val defaultBook = Book(
+        id = 1,
+        title = "Sample Book",
+        price = 20,
+        status = PublicationStatus.PUBLISHED,
+        authors = emptyList()
+    )
+
     @Test
     fun `should pass validation when all fields are valid`() {
         val author = Author(
             id = 1,
             name = "John Doe",
-            birthDate = LocalDate.of(1980, 1, 1)
+            birthDate = LocalDate.of(1980, 1, 1),
+            books = listOf(defaultBook)
         )
 
         val violations = validator.validate(author)
@@ -30,7 +39,8 @@ class AuthorTest {
         val author = Author(
             id = 1,
             name = "",
-            birthDate = LocalDate.of(1980, 1, 1)
+            birthDate = LocalDate.of(1980, 1, 1),
+            books = listOf(defaultBook)
         )
 
         val violations = validator.validate(author)
@@ -43,7 +53,8 @@ class AuthorTest {
         val author = Author(
             id = 1,
             name = "John Doe",
-            birthDate = LocalDate.now().plusDays(1) // Future date
+            birthDate = LocalDate.now().plusDays(1), // Future date
+            books = listOf(defaultBook)
         )
 
         val violations = validator.validate(author)
@@ -52,22 +63,15 @@ class AuthorTest {
     }
 
     @Test
-    fun `should allow adding books to author's list`() {
+    fun `should pass validation when books list is empty`() {
         val author = Author(
             id = 1,
             name = "John Doe",
-            birthDate = LocalDate.of(1980, 1, 1)
+            birthDate = LocalDate.of(1980, 1, 1),
+            books = emptyList()
         )
 
-        val book = Book(
-            id = 1,
-            title = "Kotlin Programming",
-            price = 29,
-            status = PublicationStatus.PUBLISHED
-        )
-
-        author.books.add(book)
-        assertEquals(1, author.books.size, "Author should have one book in the list")
-        assertEquals("Kotlin Programming", author.books.first().title, "Book title should match")
+        val violations = validator.validate(author)
+        assertTrue(violations.isEmpty(), "Validation should pass even if books list is empty")
     }
 }

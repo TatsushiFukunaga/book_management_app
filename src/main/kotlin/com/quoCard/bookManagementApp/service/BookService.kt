@@ -2,12 +2,16 @@ package com.quoCard.bookManagementApp.service
 
 import com.quoCard.bookManagementApp.model.Book
 import com.quoCard.bookManagementApp.repository.BookRepository
+import jakarta.validation.Validation
+import jakarta.validation.Validator
 import org.springframework.stereotype.Service
 
 @Service
 class BookService(
     private val bookRepository: BookRepository
 ) {
+
+    private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
 
     fun getAllBooks(): List<Book> {
         return bookRepository.findAll()
@@ -19,9 +23,7 @@ class BookService(
     }
 
     fun createBook(book: Book): Book {
-        if (book.authors.isEmpty()) {
-            throw IllegalArgumentException("A book must have at least one author")
-        }
+        validateBook(book)
         return bookRepository.save(book)
     }
 
@@ -33,10 +35,21 @@ class BookService(
             status = updatedBook.status,
             authors = updatedBook.authors
         )
+        validateBook(bookToSave)
         return bookRepository.save(bookToSave)
     }
 
     fun deleteBook(id: Long) {
+        bookRepository.findById(id)
+            ?: throw IllegalArgumentException("Book with ID $id not found")
         bookRepository.deleteById(id)
+    }
+
+    private fun validateBook(book: Book) {
+        val violations = validator.validate(book)
+        if (violations.isNotEmpty()) {
+            val errorMessage = violations.joinToString(", ") { it.message }
+            throw IllegalArgumentException("Invalid book data: $errorMessage")
+        }
     }
 }
