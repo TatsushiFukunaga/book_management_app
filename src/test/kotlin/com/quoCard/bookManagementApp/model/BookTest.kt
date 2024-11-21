@@ -3,9 +3,9 @@ package com.quoCard.bookManagementApp.model
 import jakarta.validation.Validation
 import jakarta.validation.Validator
 import jakarta.validation.ValidatorFactory
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDate
