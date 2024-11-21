@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(BookController::class)
-class BookControllerTest {
+internal class BookControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc

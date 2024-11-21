@@ -4,6 +4,8 @@ import com.quoCard.bookManagementApp.model.Author
 import com.quoCard.bookManagementApp.model.Book
 import com.quoCard.bookManagementApp.model.PublicationStatus
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,11 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.util.Collections.emptyList
 
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
-class BookRepositoryTest {
+internal class BookRepositoryTest {
 
     @Autowired
     private lateinit var bookRepository: BookRepository

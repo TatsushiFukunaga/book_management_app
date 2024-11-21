@@ -9,10 +9,12 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
+import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDate
 import java.util.Collections.emptyList
 
-class BookServiceTest {
+@SpringBootTest
+internal class BookServiceTest {
 
     private val bookRepository: BookRepository = Mockito.mock(BookRepository::class.java)
     private val bookService = BookService(bookRepository)

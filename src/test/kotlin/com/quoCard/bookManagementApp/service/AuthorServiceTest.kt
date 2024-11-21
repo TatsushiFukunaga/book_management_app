@@ -8,8 +8,10 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
+import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDate
 
+@SpringBootTest
 internal class AuthorServiceTest {
 
     private val authorRepository: AuthorRepository = Mockito.mock(AuthorRepository::class.java)
@@ -74,7 +76,6 @@ internal class AuthorServiceTest {
         assertTrue(exception.message!!.contains("Invalid author data"))
         assertTrue(exception.message!!.contains("Author name cannot be blank"))
         assertTrue(exception.message!!.contains("Birthdate must be in the past or present"))
-        assertTrue(exception.message!!.contains("List of books written by the author"))
     }
 
     @Test

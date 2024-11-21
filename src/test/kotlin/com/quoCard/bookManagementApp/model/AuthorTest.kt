@@ -6,9 +6,11 @@ import jakarta.validation.ValidatorFactory
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDate
 
-class AuthorTest {
+@SpringBootTest
+internal class AuthorTest {
 
     private val validatorFactory: ValidatorFactory = Validation.buildDefaultValidatorFactory()
     private val validator: Validator = validatorFactory.validator
