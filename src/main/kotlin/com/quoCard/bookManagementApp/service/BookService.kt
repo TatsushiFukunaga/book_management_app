@@ -5,7 +5,9 @@ import com.quoCard.bookManagementApp.repository.BookRepository
 import jakarta.validation.Validation
 import jakarta.validation.Validator
 import org.springframework.stereotype.Service
+import org.springframework.validation.annotation.Validated
 
+@Validated
 @Service
 class BookService(
     private val bookRepository: BookRepository
