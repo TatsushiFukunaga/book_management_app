@@ -70,7 +70,7 @@ dependencies {
 	testImplementation 'org.postgresql:postgresql:42.7.0'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testImplementation 'org.mockito:mockito-core:5.11.0'
+	testImplementation 'org.mockito.kotlin:mockito-kotlin:4.1.0'
 	testImplementation 'com.h2database:h2'
 }
 
@@ -87,6 +87,8 @@ flyway {
 	schemas = ['public']
 	locations = ['filesystem:src/main/resources/db/migration']
 	cleanDisabled = false
+	baselineOnMigrate = false
+//	baselineVersion = 1
 }
 
 jooq {
