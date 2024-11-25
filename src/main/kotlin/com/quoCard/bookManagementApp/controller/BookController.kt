@@ -1,6 +1,9 @@
 package com.quoCard.bookManagementApp.controller
 
-import com.quoCard.bookManagementApp.model.Book
+import com.quoCard.bookManagementApp.model.dto.BookDto
+import com.quoCard.bookManagementApp.model.entity.Book
+import com.quoCard.bookManagementApp.model.response.BookResponse
+import com.quoCard.bookManagementApp.model.response.ErrorResponse
 import com.quoCard.bookManagementApp.service.BookService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -32,13 +35,13 @@ class BookController(
                 responseCode = "200",
                 description = "Successful operation",
                 content = [
-                    Content(mediaType = "application/json", schema = Schema(implementation = Book::class))
+                    Content(mediaType = "application/json", schema = Schema(implementation = BookResponse::class))
                 ]
             )
         ]
     )
     @GetMapping
-    fun getAllBooks(): List<Book> {
+    fun getAllBooks(): List<BookResponse> {
         return bookService.getAllBooks()
     }
 
@@ -49,10 +52,16 @@ class BookController(
                 responseCode = "200",
                 description = "Book found",
                 content = [
-                    Content(mediaType = "application/json", schema = Schema(implementation = Book::class))
+                    Content(mediaType = "application/json", schema = Schema(implementation = BookResponse::class))
                 ]
             ),
-            ApiResponse(responseCode = "404", description = "Book not found")
+            ApiResponse(
+                responseCode = "404",
+                description = "Book not found",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
+                ]
+            )
         ]
     )
     @GetMapping("/{id}")
@@ -60,7 +69,7 @@ class BookController(
         @Parameter(description = "ID of the book to be retrieved", example = "1")
         @PathVariable
         id: Long
-    ): Book {
+    ): BookResponse {
         return bookService.getBookById(id)
     }
 
@@ -71,10 +80,16 @@ class BookController(
                 responseCode = "201",
                 description = "Book created successfully",
                 content = [
-                    Content(mediaType = "application/json", schema = Schema(implementation = Book::class))
+                    Content(mediaType = "application/json", schema = Schema(implementation = BookResponse::class))
                 ]
             ),
-            ApiResponse(responseCode = "400", description = "Invalid input")
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid input",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
+                ]
+            )
         ]
     )
     @PostMapping
@@ -82,8 +97,8 @@ class BookController(
     fun createBook(
         @Parameter(description = "Details of the book to be created")
         @RequestBody
-        book: Book
-    ): Book {
+        book: BookDto
+    ): BookResponse {
         return bookService.createBook(book)
     }
 
@@ -94,11 +109,23 @@ class BookController(
                 responseCode = "200",
                 description = "Book updated successfully",
                 content = [
-                    Content(mediaType = "application/json", schema = Schema(implementation = Book::class))
+                    Content(mediaType = "application/json", schema = Schema(implementation = BookResponse::class))
                 ]
             ),
-            ApiResponse(responseCode = "404", description = "Book not found"),
-            ApiResponse(responseCode = "400", description = "Invalid input")
+            ApiResponse(
+                responseCode = "404",
+                description = "Book not found",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid input",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
+                ]
+            )
         ]
     )
     @PutMapping("/{id}")
@@ -108,8 +135,8 @@ class BookController(
         id: Long,
         @Parameter(description = "Updated details of the book")
         @RequestBody
-        book: Book
-    ): Book {
+        book: BookDto
+    ): BookResponse {
         return bookService.updateBook(id, book)
     }
 
@@ -117,7 +144,13 @@ class BookController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "204", description = "Book deleted successfully"),
-            ApiResponse(responseCode = "404", description = "Book not found")
+            ApiResponse(
+                responseCode = "404",
+                description = "Book not found",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
+                ]
+            )
         ]
     )
     @DeleteMapping("/{id}")

@@ -1,7 +1,9 @@
 package com.quoCard.bookManagementApp.controller
 
-import com.quoCard.bookManagementApp.model.Author
-import com.quoCard.bookManagementApp.model.Book
+import com.quoCard.bookManagementApp.model.dto.AuthorDto
+import com.quoCard.bookManagementApp.model.response.AuthorResponse
+import com.quoCard.bookManagementApp.model.response.BookResponse
+import com.quoCard.bookManagementApp.model.response.ErrorResponse
 import com.quoCard.bookManagementApp.service.AuthorService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -33,13 +35,13 @@ class AuthorController(
                 responseCode = "200",
                 description = "Successful operation",
                 content = [
-                    Content(mediaType = "application/json", schema = Schema(implementation = Author::class))
+                    Content(mediaType = "application/json", schema = Schema(implementation = AuthorResponse::class))
                 ]
             )
         ]
     )
     @GetMapping
-    fun getAllAuthors(): List<Author> {
+    fun getAllAuthors(): List<AuthorResponse> {
         return authorService.getAllAuthors()
     }
 
@@ -50,10 +52,16 @@ class AuthorController(
                 responseCode = "200",
                 description = "Author found",
                 content = [
-                    Content(mediaType = "application/json", schema = Schema(implementation = Author::class))
+                    Content(mediaType = "application/json", schema = Schema(implementation = AuthorResponse::class))
                 ]
             ),
-            ApiResponse(responseCode = "404", description = "Author not found")
+            ApiResponse(
+                responseCode = "404",
+                description = "Author not found",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
+                ]
+            )
         ]
     )
     @GetMapping("/{id}")
@@ -61,8 +69,36 @@ class AuthorController(
         @Parameter(description = "ID of the author to retrieve", example = "1")
         @PathVariable
         id: Long
-    ): Author {
+    ): AuthorResponse {
         return authorService.getAuthorById(id)
+    }
+
+    @Operation(summary = "Get all books by author ID", description = "Retrieve all books associated with a specific author")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Books retrieved successfully",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = BookResponse::class))
+                ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Author not found",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
+                ]
+            )
+        ]
+    )
+    @GetMapping("/{id}/books")
+    fun getBooksByAuthorId(
+        @Parameter(description = "ID of the author whose books are to be retrieved", example = "1")
+        @PathVariable
+        id: Long
+    ): List<BookResponse> {
+        return authorService.getBooksByAuthorId(id)
     }
 
     @Operation(summary = "Create a new author", description = "Add a new author to the system")
@@ -72,10 +108,16 @@ class AuthorController(
                 responseCode = "201",
                 description = "Author created successfully",
                 content = [
-                    Content(mediaType = "application/json", schema = Schema(implementation = Author::class))
+                    Content(mediaType = "application/json", schema = Schema(implementation = AuthorResponse::class))
                 ]
             ),
-            ApiResponse(responseCode = "400", description = "Invalid input")
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid input",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
+                ]
+            )
         ]
     )
     @PostMapping
@@ -83,8 +125,8 @@ class AuthorController(
     fun createAuthor(
         @Parameter(description = "Details of the author to create")
         @RequestBody
-        author: Author
-    ): Author {
+        author: AuthorDto
+    ): AuthorResponse {
         return authorService.createAuthor(author)
     }
 
@@ -95,11 +137,23 @@ class AuthorController(
                 responseCode = "200",
                 description = "Author updated successfully",
                 content = [
-                    Content(mediaType = "application/json", schema = Schema(implementation = Author::class))
+                    Content(mediaType = "application/json", schema = Schema(implementation = AuthorResponse::class))
                 ]
             ),
-            ApiResponse(responseCode = "404", description = "Author not found"),
-            ApiResponse(responseCode = "400", description = "Invalid input")
+            ApiResponse(
+                responseCode = "404",
+                description = "Author not found",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid input",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
+                ]
+            )
         ]
     )
     @PutMapping("/{id}")
@@ -109,8 +163,8 @@ class AuthorController(
         id: Long,
         @Parameter(description = "Updated details of the author")
         @RequestBody
-        author: Author
-    ): Author {
+        author: AuthorDto
+    ): AuthorResponse {
         return authorService.updateAuthor(id, author)
     }
 
@@ -118,7 +172,13 @@ class AuthorController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "204", description = "Author deleted successfully"),
-            ApiResponse(responseCode = "404", description = "Author not found")
+            ApiResponse(
+                responseCode = "404",
+                description = "Author not found",
+                content = [
+                    Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
+                ]
+            )
         ]
     )
     @DeleteMapping("/{id}")
@@ -129,27 +189,5 @@ class AuthorController(
         id: Long
     ) {
         authorService.deleteAuthor(id)
-    }
-
-    @Operation(summary = "Get all books by author ID", description = "Retrieve all books associated with a specific author")
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "Books retrieved successfully",
-                content = [
-                    Content(mediaType = "application/json", schema = Schema(implementation = Book::class))
-                ]
-            ),
-            ApiResponse(responseCode = "404", description = "Author not found")
-        ]
-    )
-    @GetMapping("/{id}/books")
-    fun getBooksByAuthorId(
-        @Parameter(description = "ID of the author whose books are to be retrieved", example = "1")
-        @PathVariable
-        id: Long
-    ): List<Book> {
-        return authorService.getBooksByAuthorId(id)
     }
 }

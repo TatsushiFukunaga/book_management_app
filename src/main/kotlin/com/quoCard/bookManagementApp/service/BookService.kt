@@ -1,7 +1,17 @@
 package com.quoCard.bookManagementApp.service
 
-import com.quoCard.bookManagementApp.model.Book
+import com.quoCard.bookManagementApp.extension.toExistingEntity
+import com.quoCard.bookManagementApp.extension.toNewEntity
+import com.quoCard.bookManagementApp.extension.toResponse
+import com.quoCard.bookManagementApp.model.dto.BookDto
+import com.quoCard.bookManagementApp.model.entity.Book
+import com.quoCard.bookManagementApp.model.exception.InvalidAuthorException
+import com.quoCard.bookManagementApp.model.exception.ResourceNotFoundException
+import com.quoCard.bookManagementApp.model.response.BookResponse
+import com.quoCard.bookManagementApp.repository.AuthorRepository
+import com.quoCard.bookManagementApp.repository.BookAuthorRepository
 import com.quoCard.bookManagementApp.repository.BookRepository
+import jakarta.validation.Valid
 import jakarta.validation.Validation
 import jakarta.validation.Validator
 import org.springframework.stereotype.Service
@@ -10,48 +20,62 @@ import org.springframework.validation.annotation.Validated
 @Validated
 @Service
 class BookService(
-    private val bookRepository: BookRepository
+    private val bookRepository: BookRepository,
+    private val bookAuthorRepository: BookAuthorRepository,
+    private val authorRepository: AuthorRepository
 ) {
 
     private val validator: Validator = Validation.buildDefaultValidatorFactory().validator
 
-    fun getAllBooks(): List<Book> {
-        return bookRepository.findAll()
+    fun getAllBooks(): List<BookResponse> {
+        val books = bookRepository.findAll()
+        return books.map { book: Book ->
+            val authorIds = bookAuthorRepository.findAuthorIdsByBookId(book.id)
+            book.toResponse(authorIds)
+        }
     }
 
-    fun getBookById(id: Long): Book {
-        return bookRepository.findById(id)
-            ?: throw IllegalArgumentException("Book with ID $id not found")
+    fun getBookById(id: Long): BookResponse {
+        val book = bookRepository.findById(id)
+            ?: throw ResourceNotFoundException("Book with ID $id not found")
+        val authors = bookAuthorRepository.findAuthorIdsByBookId(book.id)
+        return book.toResponse(authors)
     }
 
-    fun createBook(book: Book): Book {
-        validateBook(book)
-        return bookRepository.save(book)
+    fun createBook(@Valid bookDto: BookDto): BookResponse {
+        validateBook(bookDto)
+        val savedBook = bookRepository.save(bookDto.toNewEntity())
+        bookAuthorRepository.saveRelationsByBookId(savedBook.id, bookDto.authorIds)
+        val authorIds = bookAuthorRepository.findAuthorIdsByBookId(savedBook.id)
+        return savedBook.toResponse(authorIds)
     }
 
-    fun updateBook(id: Long, updatedBook: Book): Book {
-        val existingBook = getBookById(id)
-        val bookToSave = existingBook.copy(
-            title = updatedBook.title,
-            price = updatedBook.price,
-            status = updatedBook.status,
-            authors = updatedBook.authors
-        )
-        validateBook(bookToSave)
-        return bookRepository.save(bookToSave)
+    fun updateBook(id: Long, @Valid updatedBookDto: BookDto): BookResponse {
+        val existingBook = bookRepository.findById(id)
+            ?: throw ResourceNotFoundException("Book with ID $id not found")
+        validateBook(updatedBookDto)
+        val savedBook = bookRepository.save(updatedBookDto.toExistingEntity(existingBook))
+        bookAuthorRepository.saveRelationsByBookId(savedBook.id, updatedBookDto.authorIds)
+        val authorIds = bookAuthorRepository.findAuthorIdsByBookId(savedBook.id)
+        return savedBook.toResponse(authorIds)
     }
 
     fun deleteBook(id: Long) {
         bookRepository.findById(id)
-            ?: throw IllegalArgumentException("Book with ID $id not found")
+            ?: throw ResourceNotFoundException("Book with ID $id not found")
         bookRepository.deleteById(id)
     }
 
-    private fun validateBook(book: Book) {
+    private fun validateBook(book: BookDto) {
         val violations = validator.validate(book)
         if (violations.isNotEmpty()) {
             val errorMessage = violations.joinToString(", ") { it.message }
             throw IllegalArgumentException("Invalid book data: $errorMessage")
+        }
+        val existingAuthorIds = authorRepository.findExistingIds()
+        val missingAuthorIds = book.authorIds.filterNot { it in existingAuthorIds }
+        if (missingAuthorIds.isNotEmpty()) {
+            throw InvalidAuthorException("The following author IDs do not exist: $missingAuthorIds")
         }
     }
 }
