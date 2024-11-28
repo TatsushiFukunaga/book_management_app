@@ -67,6 +67,7 @@ docker-compose up -d
 ---
 
 ## APIエンドポイント
+http://localhost:8080/swagger-ui/index.html#
 
 ### 著者API
 
