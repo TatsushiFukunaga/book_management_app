@@ -15,7 +15,9 @@ import jakarta.validation.Valid
 import jakarta.validation.Validation
 import jakarta.validation.Validator
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
+import java.util.Collections.emptyList
 
 @Validated
 @Service
@@ -29,8 +31,10 @@ class BookService(
 
     fun getAllBooks(): List<BookResponse> {
         val books = bookRepository.findAll()
+        val bookIds = books.map { it.id }
+        val authorIdsMap = bookAuthorRepository.findAuthorIdsByBookIds(bookIds)
         return books.map { book: Book ->
-            val authorIds = bookAuthorRepository.findAuthorIdsByBookId(book.id)
+            val authorIds = authorIdsMap[book.id] ?: emptyList()
             book.toResponse(authorIds)
         }
     }
@@ -42,6 +46,7 @@ class BookService(
         return book.toResponse(authors)
     }
 
+    @Transactional
     fun createBook(@Valid bookDto: BookDto): BookResponse {
         validateBook(bookDto)
         val savedBook = bookRepository.save(bookDto.toNewEntity())
@@ -50,6 +55,7 @@ class BookService(
         return savedBook.toResponse(authorIds)
     }
 
+    @Transactional
     fun updateBook(id: Long, @Valid updatedBookDto: BookDto): BookResponse {
         val existingBook = bookRepository.findById(id)
             ?: throw ResourceNotFoundException("Book with ID $id not found")

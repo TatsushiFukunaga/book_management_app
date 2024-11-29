@@ -23,6 +23,20 @@ class BookAuthorRepository(private val dsl: DSLContext) {
             .map { record -> record[BOOK_AUTHOR.AUTHOR_ID] }
     }
 
+    fun findBookIdsByAuthorIds(authorIds: List<Long>): Map<Long, List<Long>> {
+        return dsl.select(BOOK_AUTHOR.AUTHOR_ID, BOOK_AUTHOR.BOOK_ID)
+            .from(BOOK_AUTHOR)
+            .where(BOOK_AUTHOR.AUTHOR_ID.`in`(authorIds.map { it.toInt() }))
+            .fetchGroups({ it[BOOK_AUTHOR.AUTHOR_ID].toLong() }, { it[BOOK_AUTHOR.BOOK_ID].toLong() })
+    }
+
+    fun findAuthorIdsByBookIds(bookIds: List<Long>): Map<Long, List<Long>> {
+        return dsl.select(BOOK_AUTHOR.BOOK_ID, BOOK_AUTHOR.AUTHOR_ID)
+            .from(BOOK_AUTHOR)
+            .where(BOOK_AUTHOR.BOOK_ID.`in`(bookIds.map { it.toInt() }))
+            .fetchGroups({ it[BOOK_AUTHOR.BOOK_ID].toLong() }, { it[BOOK_AUTHOR.AUTHOR_ID].toLong() })
+    }
+
     fun saveRelationsByAuthorId(authorId: Long, bookIds: List<Long>) {
         bookIds.forEach { bookId ->
             dsl.insertInto(BOOK_AUTHOR)
